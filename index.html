@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="How to use PadelTap Audio on Apple Watch and iPhone: scoring, live score and the VAR.">
+<title>PadelTap User Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* Layout: one reading column with a sticky chapter bar; VAR chapter set on a "court" band as the centre of gravity. */
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --ink:#0E1B33; --muted:#4A5A78; --line:#D9E1EE;
+  --court:#16305C; --court-ink:#F2F5FA; --court-muted:#B8C6DE;
+  --ball:#C98A0B; --ball-soft:#FBF1DA; --rec:#D93A3F; --chip:#E8EEF7;
+  --display:"Oswald","Arial Narrow",Arial,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B1528; --surface:#122240; --ink:#EEF2F8; --muted:#A9B7CF; --line:#22365C;
+  --court:#0F2A55; --court-ink:#F2F5FA; --court-muted:#B8C6DE;
+  --ball:#F2B53A; --ball-soft:#2A2A1E; --rec:#FF6B6B; --chip:#1B2F55; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1528; --surface:#122240; --ink:#EEF2F8; --muted:#A9B7CF; --line:#22365C;
+  --court:#0F2A55; --court-ink:#F2F5FA; --court-muted:#B8C6DE;
+  --ball:#F2B53A; --ball-soft:#2A2A1E; --rec:#FF6B6B; --chip:#1B2F55; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ball);outline-offset:2px;border-radius:4px}
+
+header.top{padding-block:40px 24px}
+.brand{font-family:var(--display);font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--ball)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,52px);line-height:1.05;margin:8px 0 12px;text-transform:uppercase;text-wrap:balance}
+.lede{color:var(--muted);max-width:60ch;margin:0}
+.apps{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.app{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-decoration:none;min-width:0}
+.app b{font-size:15px}
+.app span{font-size:13px;color:var(--muted)}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.chapters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.chapters .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+nav.chapters a{flex:none;text-decoration:none;font-size:14px;font-weight:500;padding:6px 12px;border-radius:999px;background:var(--chip);white-space:nowrap}
+nav.chapters a.var{background:var(--rec);color:#fff}
+
+section{padding-block:40px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ball);font-weight:500}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,34px);text-transform:uppercase;line-height:1.1;margin:6px 0 10px;text-wrap:balance}
+h3{font-size:18px;margin:28px 0 8px}
+p{margin:0 0 12px;max-width:65ch}
+.muted{color:var(--muted)}
+
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:16px 0 0;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+ol.steps>li::before{content:counter(s);font-family:var(--display);font-weight:700;font-size:16px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--bg)}
+ol.steps>li>div{min-width:0;padding-top:4px}
+ul.plain{padding-left:20px;margin:8px 0 0}
+ul.plain li{margin:4px 0}
+
+/* UI labels as they appear on screen */
+.ui{display:inline-block;font-size:.88em;font-weight:700;padding:1px 8px;border-radius:6px;background:var(--chip);border:1px solid var(--line);white-space:nowrap}
+.ui.rec{background:var(--rec);color:#fff;border-color:transparent}
+
+.tip{margin-top:18px;padding:14px 16px;border-radius:12px;background:var(--ball-soft);border:1px solid var(--line)}
+.tip b{color:var(--ball)}
+
+/* VAR band */
+section.var{background:var(--court);color:var(--court-ink);border-bottom:none}
+section.var .muted,section.var p.muted{color:var(--court-muted)}
+section.var .eyebrow{color:var(--ball)}
+section.var .ui{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:var(--court-ink)}
+section.var .ui.rec{background:var(--rec);border-color:transparent;color:#fff}
+section.var ol.steps>li::before{background:var(--ball);color:#0E1B33}
+section.var .tip{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18)}
+section.var .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;margin-top:18px}
+.card{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:16px 18px;min-width:0}
+.card h3{margin-top:0}
+
+/* Watch VAR page mock (real layout, real labels) */
+.watch{width:210px;max-width:100%;margin:6px auto 0;border-radius:44px;background:#05080F;padding:14px;border:5px solid #2B3448}
+.wscreen{display:grid;gap:6px;font-family:-apple-system,system-ui,sans-serif;color:#fff}
+.wstatus{display:flex;gap:6px;align-items:center;font-size:11px;color:#9AA3B2;justify-content:center}
+.wstatus i{width:6px;height:6px;border-radius:50%;background:#33C759;display:inline-block}
+.wbtn{border-radius:12px;padding:8px;text-align:center;font-weight:700;font-size:13px;background:#3A3F4A}
+.wbtn.red{background:#C93A3A}.wbtn.org{background:#B36B12}
+.wrow{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.wrow4{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.wsmall{border-radius:10px;padding:6px 0;text-align:center;font-size:13px;background:#2A2F39}
+.legend{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.legend li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline}
+
+figure{margin:20px 0 0}
+figure img{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--line)}
+figure.narrow{max-width:320px;margin-inline:auto}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+section.var figcaption{color:var(--court-muted)}
+section.var figure img{border-color:rgba(255,255,255,.18)}
+.faq details{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 16px;margin-top:10px}
+.faq summary{cursor:pointer;font-weight:700}
+.faq details[open] summary{margin-bottom:8px}
+
+footer{padding-block:32px 48px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+</style>
+<style>body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="brand">PadelTap Audio</div>
+  <h1>How to use PadelTap</h1>
+  <p class="lede">Score from your Apple Watch, see the live score on your iPhone, and record disputed points with the VAR. Everything you need is on this page.</p>
+  <div class="apps">
+    <a class="app" href="https://apps.apple.com/app/id6761938802" target="_blank" rel="noopener"><b>PadelTap Audio Pro</b><span>Apple Watch · scoring &amp; voice</span></a>
+    <a class="app" href="https://apps.apple.com/app/id6766092841" target="_blank" rel="noopener"><b>PadelTap Audio</b><span>iPhone · free · live score &amp; VAR</span></a>
+  </div>
+</div></header>
+
+<nav class="chapters" aria-label="Chapters"><div class="wrap">
+  <a href="#setup">Setup</a>
+  <a href="#score">Scoring</a>
+  <a href="#live">Live score</a>
+  <a class="var" href="#var">VAR</a>
+  <a href="#remote">VAR from Watch</a>
+  <a href="#americano">Americano</a>
+  <a href="#help">Problems?</a>
+</div></nav>
+
+<main>
+<section id="setup"><div class="wrap">
+  <div class="eyebrow">Before the match</div>
+  <h2>Setup in 2 minutes</h2>
+  <ol class="steps">
+    <li><div><b>Install both apps.</b> PadelTap Audio Pro on the Apple Watch, and PadelTap Audio on the iPhone. The iPhone app is free.</div></li>
+    <li><div><b>Allow Bluetooth.</b> Tap <span class="ui">Allow</span> when each app asks. The score travels from the Watch to the iPhone by Bluetooth, which is instant. iCloud is only the backup and can take a few seconds.</div></li>
+    <li><div><b>Open the iPhone app first,</b> then the Watch app. Wait about 10 seconds before the first point so they find each other.</div></li>
+    <li><div><b>Keep the iPhone app on screen</b> during the match. If the iPhone locks or you switch apps, the live score and the VAR stop.</div></li>
+  </ol>
+  <div class="tip"><b>Check the link:</b> on the Watch, swipe to the VAR page. The top line should say <span class="ui">iPhone connected</span>.</div>
+  <figure class="narrow">
+    <img src="img/watch-and-iphone.jpg" alt="Apple Watch showing iPhone connected with Stop VAR, Archive point and Whole match buttons, next to the iPhone app" width="900" height="878" loading="lazy">
+    <figcaption>Linked and ready: the Watch shows "iPhone connected".</figcaption>
+  </figure>
+</div></section>
+
+<section id="score"><div class="wrap">
+  <div class="eyebrow">Apple Watch</div>
+  <h2>Scoring on the Watch</h2>
+  <p>Tap a team to give it the point. The Watch announces the score out loud, like a tournament umpire, and handles deuce, golden point, tie-breaks and sets for you.</p>
+  <h3>The Watch pages</h3>
+  <p>Swipe left and right to move between the 5 pages:</p>
+  <ul class="plain">
+    <li><b>Score:</b> the match.</li>
+    <li><b>Settings:</b> format (best of 3 or 5, golden point), voice, and where announcements play: the Watch or the iPhone.</li>
+    <li><b>VAR:</b> remote control for the iPhone camera (see below).</li>
+    <li><b>Americano:</b> rotating partners mode.</li>
+    <li><b>History:</b> past matches and stats.</li>
+  </ul>
+  <h3>Who serves</h3>
+  <p>The server's name is shown in red at the top. At the start of each set, the serving team can choose which partner serves: tap the red name to switch. A wrong point? Use undo.</p>
+  <div class="tip"><b>Speaker tip:</b> choose iPhone as the audio source to play announcements through a Bluetooth speaker connected to the phone.</div>
+</div></section>
+
+<section id="live"><div class="wrap">
+  <div class="eyebrow">iPhone</div>
+  <h2>Live score on the iPhone</h2>
+  <p>Put the iPhone where players can see it. The score updates by itself after every point. <span class="ui">LIVE</span> at the top left means it's receiving the match.</p>
+  <ul class="plain">
+    <li><b>Between games</b>, the big digits show the games score in color until the next point is played.</li>
+    <li>The server's name is highlighted in red.</li>
+    <li>Turn the phone sideways for a bigger scoreboard.</li>
+  </ul>
+  <h3>The buttons at the top right</h3>
+  <ul class="legend">
+    <li><span class="ui">🔊</span><span>Announcements on the iPhone on or off.</span></li>
+    <li><span class="ui">☾</span><span>Light or dark scoreboard. Light reads better in the sun.</span></li>
+    <li><span class="ui">⇄</span><span>Swaps left and right so the screen matches where each team stands.</span></li>
+    <li><span class="ui">📹</span><span>The VAR camera. Tap to turn it on, long-press for its settings.</span></li>
+  </ul>
+  <p class="muted" style="margin-top:12px">The tabs at the bottom: Live, Guide, History, Statistics and My level.</p>
+</div></section>
+
+<section id="var" class="var"><div class="wrap">
+  <div class="eyebrow">The VAR</div>
+  <h2>Record and replay disputed points</h2>
+  <p>The VAR films the court without stopping, but keeps only the last 30 seconds to 5 minutes in memory. When a point deserves a second look, archive it: those last seconds are saved to Photos, with a TV-style score banner on the video.</p>
+
+  <h3>1. Place the phone</h3>
+  <ul class="plain">
+    <li>Use a tripod or a clip on the fence, <b>behind one team</b> and as high as you can.</li>
+    <li>Turn the phone <b>sideways</b> to film the whole court.</li>
+    <li>Use the <b>back camera</b>: it films wider than the front camera and catches the service boxes.</li>
+  </ul>
+
+  <h3>2. Turn the VAR on</h3>
+  <ol class="steps">
+    <li><div>Tap the <b>camera icon</b> at the top right. It turns <span class="ui rec">red</span> and a small preview appears in the top bar.</div></li>
+    <li><div><b>Long-press</b> the camera icon to open <span class="ui">VAR Camera</span> settings:
+      <ul class="plain">
+        <li><span class="ui">Back Camera</span> / <span class="ui">Front Camera</span></li>
+        <li><span class="ui">180° Rotation</span> if the image is upside down</li>
+        <li><span class="ui">VAR length</span>: how much is kept, from 30 s to 5 min</li>
+        <li><span class="ui">Record the whole match</span></li>
+        <li><span class="ui">Score shown in the video</span>: the score banner</li>
+        <li><span class="ui">Record sound</span></li>
+      </ul></div></li>
+  </ol>
+
+  <figure>
+    <img src="img/iphone-var.jpg" alt="iPhone in landscape with the VAR on: camera preview at the top, red camera icon at the top right, red Archive Last Point button at the bottom" width="1200" height="718" loading="lazy">
+    <figcaption>VAR on: the camera icon is red, the preview shows at the top, and <b>Archive Last Point</b> appears at the bottom.</figcaption>
+  </figure>
+
+  <h3>3. Archive a point</h3>
+  <p>Right after a disputed or great point, tap <span class="ui">Archive Last Point</span>. The last seconds are saved to your Photos app. <span class="muted">No need to stop the VAR: it keeps recording.</span></p>
+
+  <h3>4. Replay it</h3>
+  <p>Tap the small red <span class="ui rec">▶ VAR</span> button just under the archive button, next to <span class="ui">Saved to Photos</span>. The replay opens right away. Use the speed buttons on the side (0.25×, ½, 1×, 2×) and pinch to zoom on the line.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Whole match</h3>
+      <p class="muted">Turn on <span class="ui">Record the whole match</span> before you start the VAR. The full match is saved to Photos when you stop the VAR. Keep the app open while it saves.</p>
+    </div>
+    <div class="card">
+      <h3>Storage</h3>
+      <p class="muted">Videos need space. Before a long match, check that the iPhone has a few GB free. When storage runs low, the app saves what it has and keeps only the last seconds.</p>
+    </div>
+  </div>
+  <div class="tip"><b>Long matches:</b> plug the phone into a power bank. Filming, Bluetooth and the screen together use a lot of battery.</div>
+</div></section>
+
+<section id="remote"><div class="wrap">
+  <div class="eyebrow">Apple Watch</div>
+  <h2>Control the VAR from your wrist</h2>
+  <p>No need to walk to the phone. Swipe to the <b>VAR page</b> on the Watch:</p>
+  <div class="grid2">
+    <figure class="narrow" style="margin-top:0">
+      <img src="img/watch-var-page.jpg" alt="Apple Watch VAR page: iPhone connected, Stop VAR, Archive point, Whole match OFF" width="640" height="720" loading="lazy">
+      <figcaption>Turn the Digital Crown to reach the replay and speed buttons below.</figcaption>
+    </figure>
+    <ul class="legend">
+      <li><span class="ui">Start VAR</span><span>Starts or stops the iPhone camera.</span></li>
+      <li><span class="ui">Archive point</span><span>Saves the last seconds to Photos.</span></li>
+      <li><span class="ui">Whole match</span><span>Turns full-match recording on or off.</span></li>
+      <li><span class="ui">▶︎ ⏯ ✕</span><span>Opens the last clip on the iPhone, plays or pauses it, closes it.</span></li>
+      <li><span class="ui">🐢 ½ 1× ⏩</span><span>Replay speed: 0.25×, half, normal, 2×.</span></li>
+    </ul>
+  </div>
+  <div class="tip"><b>Buttons greyed out?</b> The Watch isn't connected to the iPhone. Check the top line and see <a href="#help">Problems</a>.</div>
+</div></section>
+
+<section id="americano"><div class="wrap">
+  <div class="eyebrow">Game mode</div>
+  <h2>Americano</h2>
+  <p>On the Watch, swipe to the <b>Americano</b> page, enter the players and play. The team that serves is highlighted in green, so you always give the point to the right team.</p>
+  <p>The iPhone switches to Americano by itself: current score, live standings with 3-letter player codes, and the podium at the end.</p>
+</div></section>
+
+<section id="help" class="faq"><div class="wrap">
+  <div class="eyebrow">Problems?</div>
+  <h2>Quick fixes</h2>
+  <details>
+    <summary>The iPhone score updates slowly</summary>
+    <p>The apps are using iCloud instead of Bluetooth.</p>
+    <ol class="steps">
+      <li><div>Turn Bluetooth on, on the iPhone and the Watch.</div></li>
+      <li><div>Allow Bluetooth for both apps. iPhone: Settings › Privacy &amp; Security › Bluetooth › PadelTap Audio. Watch: Settings › Privacy &amp; Security › Bluetooth › PadelTap Audio Pro.</div></li>
+      <li><div>Close both apps, open the iPhone app first, then the Watch app.</div></li>
+      <li><div>Check that the Watch VAR page says <span class="ui">iPhone connected</span>. If it says <span class="ui">Other iPhone refused</span>, make sure both devices use the same Apple ID with iCloud on, then restart them.</div></li>
+    </ol>
+  </details>
+  <details>
+    <summary>"Nothing recorded" when I archive</summary>
+    <p>Usually the iPhone storage is full. Free up a few GB in Settings › General › iPhone Storage. Also make sure the camera icon is red and the app stays on screen.</p>
+  </details>
+  <details>
+    <summary>The video is upside down</summary>
+    <p>Long-press the camera icon and choose <span class="ui">180° Rotation</span>.</p>
+  </details>
+  <details>
+    <summary>The VAR stopped by itself</summary>
+    <p>The camera stops when the iPhone locks, when you open another app, or during a call. Keep PadelTap Audio on screen and plug in the phone for long matches.</p>
+  </details>
+  <details>
+    <summary>I can't hear the announcements</summary>
+    <p>Check the audio source in the Watch Settings page. With iPhone selected, sound plays on the phone or on the Bluetooth speaker connected to it.</p>
+  </details>
+</div></section>
+</main>
+
+<footer><div class="wrap">PadelTap Audio · Guide for the Apple Watch and iPhone apps</div></footer>
+
+</body>
+</html>
